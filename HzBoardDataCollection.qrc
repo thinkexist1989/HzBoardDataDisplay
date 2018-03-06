@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>play.png</file>
+        <file>pause.png</file>
+        <file>vout.png</file>
+        <file>v.ico</file>
+        <file>Settings.png</file>
+        <file>zoomIn.png</file>
+        <file>zoomOut.png</file>
+    </qresource>
+</RCC>
