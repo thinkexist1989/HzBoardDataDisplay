@@ -45,3 +45,16 @@ target_wrapper.*
 # QtCtreator CMake
 CMakeLists.txt.user*
 
+
+#qt
+debug/
+release/
+*.csv
+*.exe
+
+#include chardirector lib
+!chartdir60.dll
+!chartdir60.lib
+
+#UE
+*.bak
