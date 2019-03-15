@@ -21,6 +21,7 @@ int cnt = 0;
 float TIMES = 0;
 int main(int argc, char *argv[])
 {
+   // QApplication::setAttribute(Qt::AA_EnableHighDpiScaling); //高分屏支持
     QApplication app(argc, argv);
     app.setStyleSheet("* {font-family:arial;font-size:11px}");
     DataCollection demo;
