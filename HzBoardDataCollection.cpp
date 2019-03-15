@@ -11,9 +11,11 @@
 
 #include <QDebug>
 #include <QScreen>
+#include <QStyleFactory>
+
 
 #define AVETIMES  10
-#define INFODISPLAY "Hz Board Data Collection v1.1"
+#define INFODISPLAY "Hz Board Data Collection v1.2"
 
 int cnt = 0;
 float TIMES = 0;
@@ -42,36 +44,38 @@ DataCollection::DataCollection(QWidget *parent) :
     TIMES = mm.width()/1920.0;
 
     //setFixedSize(740, 285);
-    setFixedSize(740*TIMES, 393*TIMES);
+    setFixedSize(740*TIMES, 455*TIMES);
     setWindowTitle(INFODISPLAY);
     setWindowIcon(QIcon(":/vout.png"));
 
     // The frame on the left side
-    QFrame *frame = new QFrame(this);
-    frame->setGeometry(4*TIMES, 4*TIMES, 120*TIMES, 380*TIMES);
+    frame = new QFrame(this);
+    frame->setGeometry(4*TIMES, 4*TIMES, 120*TIMES, 445*TIMES);
     frame->setFrameShape(QFrame::StyledPanel);
 
     // Run push button
-    QPushButton *runPB = new QPushButton(QIcon(":/play.png"), "Run", frame);
+    runPB = new QPushButton(QIcon(":/play.png"), "Run", frame);
     runPB->setGeometry(4*TIMES, 8*TIMES, 112*TIMES, 28*TIMES);
     runPB->setStyleSheet("QPushButton { text-align:left; padding:5px}");
     runPB->setCheckable(true);
 
     // Freeze push button
-    QPushButton *freezePB = new QPushButton(QIcon(":/pause.png"), "Pause", frame);
+    freezePB = new QPushButton(QIcon(":/pause.png"), "Pause", frame);
     freezePB->setGeometry(4*TIMES, 36*TIMES, 112*TIMES, 28*TIMES);
     freezePB->setStyleSheet("QPushButton { text-align:left; padding:5px}");
     freezePB->setCheckable(true);
 
     // The Run/Freeze buttons form a button group
-    QButtonGroup *runFreezeControl = new QButtonGroup(frame);
+    runFreezeControl = new QButtonGroup(frame);
     runFreezeControl->addButton(runPB, 1);
     runFreezeControl->addButton(freezePB, 0);
     connect(runFreezeControl, SIGNAL(buttonPressed(int)), SLOT(onRunFreezeChanged(int)));
 
     /**************** 串口号选择ComboBox******************/
-    (new QLabel("Serial Port", frame))->setGeometry(6*TIMES, 80*TIMES, 108*TIMES, 16*TIMES);
-    QComboBox *serialPort = new QComboBox(frame);
+    serialLabel = new QLabel("Serial Port", frame);
+    serialLabel->setGeometry(6*TIMES, 80*TIMES, 108*TIMES, 16*TIMES);
+    //(new QLabel("Serial Port", frame))->setGeometry(6*TIMES, 80*TIMES, 108*TIMES, 16*TIMES);
+    serialPort = new QComboBox(frame);
     serialPort->setGeometry(6*TIMES, 96*TIMES, 108*TIMES, 21*TIMES);
 
     foreach(const QSerialPortInfo &qspinfo, QSerialPortInfo::availablePorts()){
@@ -89,8 +93,10 @@ DataCollection::DataCollection(QWidget *parent) :
     connect(serialPort, SIGNAL(currentIndexChanged(QString)),SLOT(onSerialPortChanged(QString)));
 
     /*************** 波特率选择ComboBox******************/
-    (new QLabel("Baud Rate", frame))->setGeometry(6*TIMES, 120*TIMES, 108*TIMES, 16*TIMES);
-    QComboBox *baudRate = new QComboBox(frame);
+    baudRateLabel = new QLabel("Baud Rate", frame);
+    baudRateLabel->setGeometry(6*TIMES, 120*TIMES, 108*TIMES, 16*TIMES);
+    //(new QLabel("Baud Rate", frame))->setGeometry(6*TIMES, 120*TIMES, 108*TIMES, 16*TIMES);
+    baudRate = new QComboBox(frame);
     baudRate->setGeometry(6*TIMES, 136*TIMES, 108*TIMES, 21*TIMES);
     baudRate->addItems(QStringList()<<"9600"<<"19200"<<"38400"<<"115200");
     baudRate->setCurrentIndex(3);
@@ -98,8 +104,10 @@ DataCollection::DataCollection(QWidget *parent) :
     connect(baudRate, SIGNAL(currentIndexChanged(QString)),SLOT(onBaudRateChanged(QString)));
 
     /*************** 校验位选择ComboBox******************/
-    (new QLabel("Parity Bits", frame))->setGeometry(6*TIMES, 160*TIMES, 108*TIMES, 16*TIMES);
-    QComboBox *parityBits = new QComboBox(frame);
+    parityBitsLabel = new QLabel("Parity Bits", frame);
+    parityBitsLabel->setGeometry(6*TIMES, 160*TIMES, 108*TIMES, 16*TIMES);
+    //(new QLabel("Parity Bits", frame))->setGeometry(6*TIMES, 160*TIMES, 108*TIMES, 16*TIMES);
+    parityBits = new QComboBox(frame);
     parityBits->setGeometry(6*TIMES, 176*TIMES, 108*TIMES, 21*TIMES);
     parityBits->addItems(QStringList()<<"No Parity"<<"Odd Parity"<<"Even Parity");
     parityBits->setCurrentIndex(0);
@@ -108,8 +116,10 @@ DataCollection::DataCollection(QWidget *parent) :
     connect(parityBits, SIGNAL(currentIndexChanged(int)),SLOT(onParityBitsChanged(int)));
 
     /*************** 数据位选择ComboBox******************/
-    (new QLabel("Data Bits", frame))->setGeometry(6*TIMES, 200*TIMES, 108*TIMES, 16*TIMES);
-    QComboBox *dataBits = new QComboBox(frame);
+    dataBitsLabel = new QLabel("Data Bits", frame);
+    dataBitsLabel->setGeometry(6*TIMES, 200*TIMES, 108*TIMES, 16*TIMES);
+    //(new QLabel("Data Bits", frame))->setGeometry(6*TIMES, 200*TIMES, 108*TIMES, 16*TIMES);
+    dataBits = new QComboBox(frame);
     dataBits->setGeometry(6*TIMES, 216*TIMES, 108*TIMES, 21*TIMES);
     dataBits->addItems(QStringList()<<"4 bits"<<"5 bits"<<"6 bits"<<"7 bits"<<"8 bits");
     dataBits->setCurrentIndex(4);
@@ -118,8 +128,10 @@ DataCollection::DataCollection(QWidget *parent) :
     connect(dataBits, SIGNAL(currentIndexChanged(int)),SLOT(onDataBitsChanged(int)));
 
     /*************** 停止位选择ComboBox******************/
-    (new QLabel("Stop Bits", frame))->setGeometry(6*TIMES, 240*TIMES, 108*TIMES, 16*TIMES);
-    QComboBox *stopBits = new QComboBox(frame);
+    stopBitsLabel = new QLabel("Stop Bits", frame);
+    stopBitsLabel->setGeometry(6*TIMES, 240*TIMES, 108*TIMES, 16*TIMES);
+    //(new QLabel("Stop Bits", frame))->setGeometry(6*TIMES, 240*TIMES, 108*TIMES, 16*TIMES);
+    stopBits = new QComboBox(frame);
     stopBits->setGeometry(6*TIMES, 256*TIMES, 108*TIMES, 21*TIMES);
     stopBits->addItems(QStringList()<<"1 bit"<<"1.5 bits"<<"2 bits");
     stopBits->setCurrentIndex(0);
@@ -128,49 +140,99 @@ DataCollection::DataCollection(QWidget *parent) :
     connect(stopBits, SIGNAL(currentIndexChanged(int)),SLOT(onStopBitsChanged(int)));
 
 
+//    slider = new QSlider(Qt::Horizontal,frame);
+//    slider->setStyle(QStyleFactory::create("Fusion"));
+//    slider->setGeometry(6*TIMES, 280*TIMES, 108*TIMES, 16*TIMES);
+//    slider->setValue(10);
+
+//    slider->setMaximum(40);
+//    slider->setMinimum(10);
+//    slider->
+
+//    connect(slider,SIGNAL(valueChanged(int)),SLOT(onSliderChanged(int)));
+
+
     // V1 Average Value display
-    (new QLabel("Ave1", frame))->setGeometry(6*TIMES, 300*TIMES, 31*TIMES, 21*TIMES);
+    ALabel = new QLabel("Ave1", frame);
+    ALabel->setGeometry(6*TIMES, 300*TIMES, 31*TIMES, 21*TIMES);
+    //(new QLabel("Ave1", frame))->setGeometry(6*TIMES, 300*TIMES, 31*TIMES, 21*TIMES);
     m_ValueA = new QLabel(frame);
     m_ValueA->setGeometry(55*TIMES, 300*TIMES, 59*TIMES, 21*TIMES);
     m_ValueA->setFrameShape(QFrame::StyledPanel);
     m_ValueA->setText(QString::number(0,'f',4));
 
     // V2 Average Value display
-    (new QLabel("Ave2", frame))->setGeometry(6*TIMES, 325*TIMES, 31*TIMES, 21*TIMES);
+    BLabel = new QLabel("Ave2", frame);
+    BLabel->setGeometry(6*TIMES, 325*TIMES, 31*TIMES, 21*TIMES);
+   // (new QLabel("Ave2", frame))->setGeometry(6*TIMES, 325*TIMES, 31*TIMES, 21*TIMES);
     m_ValueB = new QLabel(frame);
     m_ValueB->setGeometry(55*TIMES, 325*TIMES, 59*TIMES, 21*TIMES);
     m_ValueB->setFrameShape(QFrame::StyledPanel);
     m_ValueB->setText(QString::number(0,'f',4));
 
     // V3 Average Value display
-    (new QLabel("Ave3", frame))->setGeometry(6*TIMES, 350*TIMES, 31*TIMES, 21*TIMES);
+    CLabel = new QLabel("Ave3", frame);
+    CLabel->setGeometry(6*TIMES, 350*TIMES, 31*TIMES, 21*TIMES);
+   // (new QLabel("Ave3", frame))->setGeometry(6*TIMES, 350*TIMES, 31*TIMES, 21*TIMES);
     m_ValueC = new QLabel(frame);
     m_ValueC->setGeometry(55*TIMES, 350*TIMES, 59*TIMES, 21*TIMES);
     m_ValueC->setFrameShape(QFrame::StyledPanel);
     m_ValueC->setText(QString::number(0,'f',4));
 
+    /*********DAC输出设置********/
+    spinDAC = new QSpinBox(frame);
+    spinDAC->setGeometry(6*TIMES, 385*TIMES, 48*TIMES, 21*TIMES);
+    spinDAC->setValue(10);
+    spinDAC->setRange(0,2500);
+
+    setDAC = new QPushButton(QIcon(":/Settings.png"), "Set", frame);
+    setDAC->setGeometry(60*TIMES, 385*TIMES, 55*TIMES, 21*TIMES);
+    setDAC->setStyleSheet("QPushButton { text-align:left; padding:5px}");
+    setDAC->setCheckable(true);
+
+    connect(setDAC,SIGNAL(clicked()),SLOT(onSetDacChanged()));
+
+
+    zoomOut = new QPushButton(QIcon(":/zoomOut.png"),"-", frame);
+    zoomOut->setGeometry(6*TIMES, 420*TIMES, 50*TIMES, 21*TIMES);
+    zoomOut->setStyleSheet("QPushButton { text-align:left; padding:5px}");
+    zoomOut->setCheckable(true);
+
+    zoomIn = new QPushButton(QIcon(":/zoomIn.png"),"+", frame);
+    zoomIn->setGeometry(62*TIMES, 420*TIMES, 50*TIMES, 21*TIMES);
+    zoomIn->setStyleSheet("QPushButton { text-align:left; padding:5px}");
+    zoomIn->setCheckable(true);
+
+
+
+    zoomControl = new QButtonGroup(frame);
+    zoomControl->addButton(zoomIn, 1);
+    zoomControl->addButton(zoomOut, 0);
+    connect(zoomControl, SIGNAL(buttonPressed(int)), SLOT(onZoomChanged(int)));
+
+
 
 
     // Chart Viewer
     m_ChartViewer = new QChartViewer(this);
-    m_ChartViewer->setGeometry(132*TIMES, 8*TIMES, 600*TIMES, 378*TIMES);
+    m_ChartViewer->setGeometry(132*TIMES, 8*TIMES, 600*TIMES, 445*TIMES);
     connect(m_ChartViewer, SIGNAL(viewPortChanged()), SLOT(drawChart()));
 
 
     /************** 数据显示CheckBox*************/
-    QCheckBox *checkA = new QCheckBox(frame);
+    checkA = new QCheckBox(frame);
     checkA->setGeometry(35*TIMES, 300*TIMES, 21*TIMES, 21*TIMES);
     checkA->setStyleSheet("QCheckBox::indicator::checked{border: 1px solid grey;background: red}");
 
-    QCheckBox *checkB = new QCheckBox(frame);
+    checkB = new QCheckBox(frame);
     checkB->setGeometry(35*TIMES, 325*TIMES, 21*TIMES, 21*TIMES);
     checkB->setStyleSheet("QCheckBox::indicator::checked{border: 1px solid grey;background: green}");
 
-    QCheckBox *checkC = new QCheckBox(frame);
+    checkC = new QCheckBox(frame);
     checkC->setGeometry(35*TIMES, 350*TIMES, 21*TIMES, 21*TIMES);
     checkC->setStyleSheet("QCheckBox::indicator::checked{border: 1px solid grey;background: blue}");
 
-    QButtonGroup *checkControl = new QButtonGroup(m_ChartViewer);
+    checkControl = new QButtonGroup(m_ChartViewer);
     checkControl->addButton(checkA, 0);
     checkControl->addButton(checkB, 1);
     checkControl->addButton(checkC, 2);
@@ -296,6 +358,93 @@ void DataCollection::processData(double dataA, double dataB, double dataC)
       dataFile->write(buf);
 }
 
+void DataCollection::paintEvent(QPaintEvent *event)
+{
+    resetSize();
+}
+
+void DataCollection::resetSize()
+{
+    setFixedSize(740*TIMES, 455*TIMES);
+//    setWindowTitle(INFODISPLAY);
+//    setWindowIcon(QIcon(":/vout.png"));
+
+    // The frame on the left side
+    frame->setGeometry(4*TIMES, 4*TIMES, 120*TIMES, 445*TIMES);
+    frame->setFrameShape(QFrame::StyledPanel);
+
+    // Run push button
+    runPB->setGeometry(4*TIMES, 8*TIMES, 112*TIMES, 28*TIMES);
+
+    // Freeze push button
+    freezePB->setGeometry(4*TIMES, 36*TIMES, 112*TIMES, 28*TIMES);
+
+
+    /**************** 串口号选择ComboBox******************/
+    serialLabel->setGeometry(6*TIMES, 80*TIMES, 108*TIMES, 16*TIMES);
+    serialPort->setGeometry(6*TIMES, 96*TIMES, 108*TIMES, 21*TIMES);
+
+    /*************** 波特率选择ComboBox******************/
+    baudRateLabel->setGeometry(6*TIMES, 120*TIMES, 108*TIMES, 16*TIMES);
+    baudRate->setGeometry(6*TIMES, 136*TIMES, 108*TIMES, 21*TIMES);
+
+    /*************** 校验位选择ComboBox******************/
+    parityBitsLabel->setGeometry(6*TIMES, 160*TIMES, 108*TIMES, 16*TIMES);
+    parityBits->setGeometry(6*TIMES, 176*TIMES, 108*TIMES, 21*TIMES);
+
+    /*************** 数据位选择ComboBox******************/
+    dataBitsLabel->setGeometry(6*TIMES, 200*TIMES, 108*TIMES, 16*TIMES);
+    dataBits->setGeometry(6*TIMES, 216*TIMES, 108*TIMES, 21*TIMES);
+
+    /*************** 停止位选择ComboBox******************/
+    stopBitsLabel->setGeometry(6*TIMES, 240*TIMES, 108*TIMES, 16*TIMES);
+    stopBits->setGeometry(6*TIMES, 256*TIMES, 108*TIMES, 21*TIMES);
+
+   // slider->setGeometry(6*TIMES, 280*TIMES, 108*TIMES, 16*TIMES);
+
+
+
+    // V1 Average Value display
+    ALabel->setGeometry(6*TIMES, 300*TIMES, 31*TIMES, 21*TIMES);
+    m_ValueA->setGeometry(55*TIMES, 300*TIMES, 59*TIMES, 21*TIMES);
+
+    // V2 Average Value display
+    BLabel->setGeometry(6*TIMES, 325*TIMES, 31*TIMES, 21*TIMES);
+    m_ValueB->setGeometry(55*TIMES, 325*TIMES, 59*TIMES, 21*TIMES);
+
+    // V3 Average Value display
+    CLabel->setGeometry(6*TIMES, 350*TIMES, 31*TIMES, 21*TIMES);
+    m_ValueC->setGeometry(55*TIMES, 350*TIMES, 59*TIMES, 21*TIMES);
+
+    spinDAC->setGeometry(6*TIMES, 380*TIMES, 50*TIMES, 28*TIMES);
+
+    setDAC->setGeometry(60*TIMES, 380*TIMES, 50*TIMES, 28*TIMES);
+
+
+    spinDAC->setGeometry(6*TIMES, 385*TIMES, 48*TIMES, 21*TIMES);
+
+    setDAC->setGeometry(60*TIMES, 385*TIMES, 55*TIMES, 21*TIMES);
+
+    zoomOut->setGeometry(6*TIMES, 420*TIMES, 50*TIMES, 21*TIMES);
+
+    zoomIn->setGeometry(62*TIMES, 420*TIMES, 50*TIMES, 21*TIMES);
+
+
+    // Chart Viewer
+    m_ChartViewer->setGeometry(132*TIMES, 8*TIMES, 600*TIMES, 445*TIMES);
+
+
+    /************** 数据显示CheckBox*************/
+    checkA->setGeometry(35*TIMES, 300*TIMES, 21*TIMES, 21*TIMES);
+
+    checkB->setGeometry(35*TIMES, 325*TIMES, 21*TIMES, 21*TIMES);
+
+    checkC->setGeometry(35*TIMES, 350*TIMES, 21*TIMES, 21*TIMES);
+
+    update();
+}
+
+
 //
 // The Run or Freeze button is pressed
 //
@@ -392,6 +541,32 @@ void DataCollection::onStopBitsChanged(int val)
     }
 }
 
+void DataCollection::onSetDacChanged()
+{
+    int val = spinDAC->value();
+    char buf[5];
+    sprintf(buf,"d%.4d",val);
+    m_SerialPort->write(buf,5);
+}
+
+void DataCollection::onZoomChanged(int z)
+{
+    if(z){ //放大
+     TIMES *= 1.5;
+    }
+    else{
+     TIMES /= 1.5;
+    }
+
+    resetSize();
+}
+
+//void DataCollection::onSliderChanged(int val)
+//{
+//    //float val = slider->value();
+//    TIMES = (float)val/10.0;
+//}
+
 void DataCollection::onSerialReadyRead()
 {
     char databuf[256] = {0};
@@ -425,6 +600,13 @@ void DataCollection::onSerialReadyRead()
                 default:break;
                 }
                 //i=i++;
+            }
+            else if(m_RcvBuf[(m_GetPtr-4)&0xFF] == 'D'){
+                if(m_RcvBuf[(m_GetPtr-3)&0xFF] == 'A'){
+                    if(m_RcvBuf[(m_GetPtr-4)&0xFF] == 'C'){
+                        qDebug()<<"Set DAC success\n";
+                    }
+                }
             }
         }
         else{
@@ -489,14 +671,14 @@ void DataCollection::drawChart()
 {
     // Create an XYChart object 600 x 270 pixels in size, with light grey (f4f4f4)
     // background, black (000000) border, 1 pixel raised effect, and with a rounded frame.
-    XYChart *c = new XYChart(600*TIMES, 378*TIMES, 0xf4f4f4, 0x000000, 1);
+    XYChart *c = new XYChart(600*TIMES, 445*TIMES, 0xf4f4f4, 0x000000, 1);
     QColor bgColor = palette().color(backgroundRole()).rgb();
     c->setRoundedFrame((bgColor.red() << 16) + (bgColor.green() << 8) + bgColor.blue());
 
     // Set the plotarea at (55, 62) and of size 520 x 175 pixels. Use white (ffffff)
     // background. Enable both horizontal and vertical grids by setting their colors to
     // grey (cccccc). Set clipping mode to clip the data lines to the plot area.
-    c->setPlotArea(55*TIMES, 62*TIMES, 520*TIMES, 290*TIMES, 0xffffff, -1, -1, 0xcccccc, 0xcccccc);
+    c->setPlotArea(60*TIMES, 62*TIMES, 520*TIMES, 350*TIMES, 0xffffff, -1, -1, 0xcccccc, 0xcccccc);
     c->setClipping();
 
     // Add a title to the chart using 15 pts Times New Roman Bold Italic font, with a light

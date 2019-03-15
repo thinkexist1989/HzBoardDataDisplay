@@ -14,6 +14,13 @@
 
 #include "qchartviewer.h"
 
+#include <QButtonGroup>
+#include <QIcon>
+#include <QPushButton>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QSpinBox>
+
 
 // The number of samples per data series used in this demo
 const int sampleSize = 240;
@@ -65,9 +72,41 @@ private:
 
 public:
     QFile *dataFile;
+    QFrame *frame;
+    QPushButton *runPB;
+    QPushButton *freezePB;
+    QButtonGroup *runFreezeControl;
+    QLabel* serialLabel;
+    QComboBox *serialPort;
+
+    QComboBox *baudRate;
+
+    QLabel* baudRateLabel;
+    QLabel* parityBitsLabel;
+    QComboBox* parityBits;
+    QLabel* dataBitsLabel;
+    QComboBox* dataBits;
+    QLabel* stopBitsLabel;
+    QComboBox* stopBits;
+    QLabel* ALabel;
+    QLabel* BLabel;
+    QLabel* CLabel;
+    QSpinBox *spinDAC;
+    QPushButton* setDAC;
+    QPushButton* zoomOut;
+    QPushButton* zoomIn;
+    QButtonGroup* zoomControl;
+    QCheckBox* checkA;
+    QCheckBox* checkB;
+    QCheckBox* checkC;
+    QButtonGroup* checkControl;
+
+    void  resetSize();
+
 
     double ave(double* a,int n);
     void processData(double dataA, double dataB, double dataC);    //process the data
+    void paintEvent(QPaintEvent* event);
 
 private slots:
     void onRunFreezeChanged(int);       // The "Run" or "Freeze" button has been pressed
@@ -85,6 +124,9 @@ private slots:
     void getData();                     // Get new data values
     void updateChart();                 // Update the chart.
     void drawChart();                   // Draw the chart.
+
+    void  onSetDacChanged();
+    void  onZoomChanged(int z);
 };
 
 #endif // DataCollection_H
