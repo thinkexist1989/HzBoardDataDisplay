@@ -58,3 +58,4 @@ release/
 
 #UE
 *.bak
+*.rc

@@ -14,12 +14,6 @@
 
 #include "qchartviewer.h"
 
-#include <QButtonGroup>
-#include <QIcon>
-#include <QPushButton>
-#include <QComboBox>
-#include <QCheckBox>
-
 
 // The number of samples per data series used in this demo
 const int sampleSize = 240;
@@ -71,18 +65,9 @@ private:
 
 public:
     QFile *dataFile;
-    QFrame *frame;
-    QPushButton *runPB;
-    QPushButton *freezePB;
-    QButtonGroup *runFreezeControl;
-    QLabel* serialLabel;
-    QComboBox *serialPort;
-
-    QComboBox *baudRate;
 
     double ave(double* a,int n);
     void processData(double dataA, double dataB, double dataC);    //process the data
-    void paintEvent(QPaintEvent* event);
 
 private slots:
     void onRunFreezeChanged(int);       // The "Run" or "Freeze" button has been pressed
