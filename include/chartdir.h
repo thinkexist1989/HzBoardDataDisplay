@@ -511,16 +511,6 @@ namespace Chart
 		DirectionHorizontalVertical = 2
 	};
 
-	enum
-	{
-        TreeMapSliceAndDice = 1,
-        TreeMapSquarify = 2,
-        TreeMapStrip = 3,
-        TreeMapBinaryBySize = 4,
-        TreeMapBinaryByMid = 5,
-        TreeMapNoLayout = 6
-	};
-
 	//
 	// Ver 5.1 
 	//
@@ -2787,99 +2777,6 @@ public :
 	PyramidLayer *getLayer(int layerNo)
 	{ PyramidLayerInternal *p = CPyramidChart_getLayer(ptr, layerNo); if (!p) return 0; 
 	  PyramidLayer *ret = new PyramidLayer(p); reg(ret); return ret; }
-};
-
-
-class TreeMapNode: public AutoDestroy, protected GarbageContainer
-{
-private :
-	//disable copying
-	TreeMapNode(const TreeMapNode &rhs);
-	TreeMapNode &operator=(const TreeMapNode &rhs);
-
-	TreeMapNodeInternal *ptr;
-
-public :
-	TreeMapNode(TreeMapNodeInternal *_ptr) : ptr(_ptr) {}
-	~TreeMapNode() {}
-
-	void setData(DoubleArray data, StringArray labels = StringArray(), IntArray colors = IntArray())
-	{ CTreeMapNode_setData(ptr, data.data, data.len, labels.data, labels.len, colors.data, colors.len); }
-	void addExtraField(StringArray texts)
-	{ CTreeMapNode_addExtraField(ptr, texts.data, texts.len); }
-	void addExtraField(DoubleArray numbers)
-	{ CTreeMapNode_addExtraField2(ptr, numbers.data, numbers.len); }
-
-	void setColors(int fillColor, int edgeColor = -1, int raisedEffect = -0x7fffffff)
-	{ CTreeMapNode_setColors(ptr, fillColor, edgeColor, raisedEffect); }
-	TextBox *setLabelFormat(const char *format = "{label}", const char *font = "normal", int fontSize = 10, 
-		int fontColor = Chart::TextColor, int alignment = Chart::TopLeft)
-	{ TextBox *ret = new TextBox(CTreeMapNode_setLabelFormat(ptr, format, font, fontSize, fontColor, alignment)); reg(ret); return ret; }
-	
-	void setLayoutMethod(int layoutMethod, int layoutDirection = Chart::TopLeft, int swapXY = 0)
-	{ CTreeMapNode_setLayoutMethod(ptr, layoutMethod, layoutDirection, swapXY); }
-    void setLayoutAspectRatio(double ratio)
-	{ CTreeMapNode_setLayoutAspectRatio(ptr, ratio); }
-	void setLayoutAspectMultiplier(double multiplier)
-	{ CTreeMapNode_setLayoutAspectMultiplier(ptr, multiplier); }
-	void setSorting(int mode)
-	{ CTreeMapNode_setSorting(ptr, mode); }
-
-	TreeMapNode *getNode(int i)
-	{ TreeMapNodeInternal *p = CTreeMapNode_getNode(ptr, i); if (!p) return 0;
-	  TreeMapNode *ret = new TreeMapNode(p); reg(ret); return ret; }
-	int getNodeCount() const
-	{  return CTreeMapNode_getNodeCount(ptr); }
-    double getValue() const
-	{  return CTreeMapNode_getValue(ptr); }
-	const char *getLabel() const
-	{  return CTreeMapNode_getLabel(ptr); }
-
-    int getLeftX() const
-	{  return CTreeMapNode_getLeftX(ptr); }
-    int getTopY() const
-	{  return CTreeMapNode_getTopY(ptr); }
-    int getWidth() const
-	{  return CTreeMapNode_getWidth(ptr); }
-    int getHeight() const
-	{  return CTreeMapNode_getHeight(ptr); }
-    int getRightX() const
-	{  return CTreeMapNode_getRightX(ptr); }
-    int getBottomY() const
-	{  return CTreeMapNode_getBottomY(ptr); }
-
-    void setPos(int x, int y, int w, int h)
-	{  CTreeMapNode_setPos(ptr, x, y, w, h); }
-};
-
-
-class TreeMapChart : public BaseChart
-{
-private :
-	//disable copying
-	TreeMapChart(const TreeMapChart &rhs);
-	TreeMapChart &operator=(const TreeMapChart &rhs);
-
-	TreeMapChartInternal *ptr;
-
-public :
-	TreeMapChart(int width, int height, int bgColor = Chart::BackgroundColor,
-		int edgeColor = Chart::Transparent, int raisedEffect = 0)
-	{ ptr = CTreeMapChart_create(width, height, bgColor, edgeColor, raisedEffect);
-	  init(TreeMapChart2BaseChart(ptr)); }
-
-	void setPlotArea(int x, int y, int width, int height)
-	{ CTreeMapChart_setPlotArea(ptr, x, y, width, height); }
-
-    TreeMapNode *getRootNode()
-	{ TreeMapNodeInternal *p = CTreeMapChart_getRootNode(ptr); if (!p) return 0;
-	  TreeMapNode *ret = new TreeMapNode(p); reg(ret); return ret; }
-	TreeMapNode *getLevelPrototype(int i)
-	{ TreeMapNodeInternal *p = CTreeMapChart_getLevelPrototype(ptr, i); if (!p) return 0;
-	  TreeMapNode *ret = new TreeMapNode(p); reg(ret); return ret; }
-
-	void setMapLevel(int level)
-	{ CTreeMapChart_setMapLevel(ptr, level); }
 };
 
 

@@ -1039,48 +1039,6 @@ CHARTDIR_DLLAPI PyramidLayerInternal * __cdecl CPyramidChart_getLayer(PyramidCha
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
-//	treemapchart.h
-////////////////////////////////////////////////////////////////////////////////////////
-class TreeMapNodeInternal;
-
-CHARTDIR_DLLAPI void __cdecl CTreeMapNode_setData(TreeMapNodeInternal *ptr, const double *dataData, int dataLen, const char * const *namesData, int namesLen, const int *colorsData, int colorsLen);
-CHARTDIR_DLLAPI void __cdecl CTreeMapNode_addExtraField(TreeMapNodeInternal *ptr, const char * const * strData, int arrayLen);
-CHARTDIR_DLLAPI void __cdecl CTreeMapNode_addExtraField2(TreeMapNodeInternal *ptr, const double *dblData, int arrayLen);
-
-CHARTDIR_DLLAPI void __cdecl CTreeMapNode_setColors(TreeMapNodeInternal *ptr, int fillColor, int edgeColor, int raisedEffect);
-CHARTDIR_DLLAPI TextBoxInternal * __cdecl CTreeMapNode_setLabelFormat(TreeMapNodeInternal *ptr, const char *format, const char *font, int fontSize, int fontColor, int alignment);
-
-CHARTDIR_DLLAPI void __cdecl CTreeMapNode_setLayoutMethod(TreeMapNodeInternal *ptr, int layoutMethod, int layoutDirection, int swapXY);
-CHARTDIR_DLLAPI void __cdecl CTreeMapNode_setLayoutAspectRatio(TreeMapNodeInternal *ptr, double ratio);
-CHARTDIR_DLLAPI void __cdecl CTreeMapNode_setLayoutAspectMultiplier(TreeMapNodeInternal *ptr, double multiplier);
-CHARTDIR_DLLAPI void __cdecl CTreeMapNode_setSorting(TreeMapNodeInternal *ptr, int mode);
-
-CHARTDIR_DLLAPI TreeMapNodeInternal * __cdecl CTreeMapNode_getNode(TreeMapNodeInternal *ptr, int i);
-CHARTDIR_DLLAPI int __cdecl CTreeMapNode_getNodeCount(TreeMapNodeInternal *ptr);
-
-CHARTDIR_DLLAPI double __cdecl CTreeMapNode_getValue(TreeMapNodeInternal *ptr);
-CHARTDIR_DLLAPI const char * __cdecl CTreeMapNode_getLabel(TreeMapNodeInternal *ptr);
-
-CHARTDIR_DLLAPI int __cdecl CTreeMapNode_getLeftX(TreeMapNodeInternal *ptr);
-CHARTDIR_DLLAPI int __cdecl CTreeMapNode_getTopY(TreeMapNodeInternal *ptr);
-CHARTDIR_DLLAPI int __cdecl CTreeMapNode_getWidth(TreeMapNodeInternal *ptr);
-CHARTDIR_DLLAPI int __cdecl CTreeMapNode_getHeight(TreeMapNodeInternal *ptr);
-CHARTDIR_DLLAPI int __cdecl CTreeMapNode_getRightX(TreeMapNodeInternal *ptr);
-CHARTDIR_DLLAPI int __cdecl CTreeMapNode_getBottomY(TreeMapNodeInternal *ptr);
-
-CHARTDIR_DLLAPI void __cdecl CTreeMapNode_setPos(TreeMapNodeInternal *ptr, int x, int y, int w, int h);
-
-class TreeMapChartInternal;
-CHARTDIR_DLLAPI BaseChartInternal * __cdecl TreeMapChart2BaseChart(TreeMapChartInternal *ptr);
-CHARTDIR_DLLAPI TreeMapChartInternal * __cdecl CTreeMapChart_create(int width, int height, int bgColor, int edgeColor, int raisedEffect);
-
-CHARTDIR_DLLAPI void __cdecl CTreeMapChart_setPlotArea(TreeMapChartInternal *ptr, int x, int y, int width, int height);
-CHARTDIR_DLLAPI TreeMapNodeInternal * __cdecl CTreeMapChart_getRootNode(TreeMapChartInternal *ptr);
-CHARTDIR_DLLAPI TreeMapNodeInternal * __cdecl CTreeMapChart_getLevelPrototype(TreeMapChartInternal *ptr, int i);
-CHARTDIR_DLLAPI void __cdecl CTreeMapChart_setMapLevel(TreeMapChartInternal *ptr, int level);
-
-
-////////////////////////////////////////////////////////////////////////////////////////
 //	meterpointer.h
 ////////////////////////////////////////////////////////////////////////////////////////
 class MeterPointerInternal;
